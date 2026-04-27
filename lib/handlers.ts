@@ -111,8 +111,11 @@ async function processText(chatId: number, userId: number, day: string, text: st
     const tasks = await getTodayTasks(userId, day);
     await sendMessage(chatId, `✨ Добавлено задач: ${extracted.length}\n\n${formatTaskList(tasks)}`);
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error('Process error:', msg);
-    await sendMessage(chatId, `⚠️ Ошибка: ${msg.slice(0, 300)}`);
+    let msg: string;
+    if (err instanceof Error) msg = err.message;
+    else if (err && typeof err === 'object') msg = JSON.stringify(err);
+    else msg = String(err);
+    console.error('Process error:', msg, err);
+    await sendMessage(chatId, `⚠️ Ошибка: ${msg.slice(0, 500)}`);
   }
 }

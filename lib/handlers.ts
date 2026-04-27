@@ -36,8 +36,15 @@ export async function handleUpdate(update: TgUpdate): Promise<void> {
   const userId = msg.from.id;
   const day = today();
 
+  console.log(`[handler] user=${userId} chat=${chatId} text=${msg.text ?? '(voice)'}`);
+
   if (msg.text) {
     const text = msg.text.trim();
+
+    if (text === '/whoami') {
+      await sendMessage(chatId, `Твой user_id: <code>${userId}</code>`);
+      return;
+    }
 
     if (text === '/start') {
       await sendMessage(
@@ -104,7 +111,8 @@ async function processText(chatId: number, userId: number, day: string, text: st
     const tasks = await getTodayTasks(userId, day);
     await sendMessage(chatId, `✨ Добавлено задач: ${extracted.length}\n\n${formatTaskList(tasks)}`);
   } catch (err) {
-    console.error('Process error:', err);
-    await sendMessage(chatId, '⚠️ Ошибка обработки. Попробуй позже.');
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('Process error:', msg);
+    await sendMessage(chatId, `⚠️ Ошибка: ${msg.slice(0, 300)}`);
   }
 }

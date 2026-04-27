@@ -33,7 +33,9 @@ export async function extractTasks(userText: string): Promise<ExtractedTask[]> {
   });
 
   if (!res.ok) {
-    throw new Error(`OpenRouter error ${res.status}: ${await res.text()}`);
+    const body = await res.text();
+    console.error(`OpenRouter ${res.status}: ${body}`);
+    throw new Error(`OpenRouter ${res.status}: ${body.slice(0, 200)}`);
   }
 
   const data = (await res.json()) as { choices: [{ message: { content: string } }] };

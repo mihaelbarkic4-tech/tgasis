@@ -4,11 +4,14 @@ const BASE = `https://api.telegram.org/bot${env.TELEGRAM_TOKEN}`;
 const FILE_BASE = `https://api.telegram.org/file/bot${env.TELEGRAM_TOKEN}`;
 
 export async function sendMessage(chatId: number, text: string): Promise<void> {
-  await fetch(`${BASE}/sendMessage`, {
+  const res = await fetch(`${BASE}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
   });
+  if (!res.ok) {
+    console.error(`sendMessage ${res.status}: ${await res.text()}`);
+  }
 }
 
 export async function getFileUrl(fileId: string): Promise<string> {

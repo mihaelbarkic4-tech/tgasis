@@ -6,14 +6,14 @@ export interface ExtractedTask {
 }
 
 export async function extractTasks(userText: string): Promise<ExtractedTask[]> {
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
+      Authorization: `Bearer ${env.GROQ_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'meta-llama/llama-3.3-70b-instruct:free',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.3,
       messages: [
         {
@@ -34,8 +34,8 @@ export async function extractTasks(userText: string): Promise<ExtractedTask[]> {
 
   if (!res.ok) {
     const body = await res.text();
-    console.error(`OpenRouter ${res.status}: ${body}`);
-    throw new Error(`OpenRouter ${res.status}: ${body.slice(0, 200)}`);
+    console.error(`Groq LLM ${res.status}: ${body}`);
+    throw new Error(`Groq LLM ${res.status}: ${body.slice(0, 200)}`);
   }
 
   const data = (await res.json()) as { choices: [{ message: { content: string } }] };
